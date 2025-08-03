@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { Link, Copy, Trash2, RefreshCw, ExternalLink, Check } from 'lucide-react';
 import { urlApi } from '@/lib/api';
-import { Url, formatDate, copyToClipboard, cn } from '@/lib/utils';
+import { Url } from '@/types';
+import { formatDate, copyToClipboard, cn } from '@/lib/utils';
 
 interface UrlListProps {
   urls: Url[];
@@ -41,7 +42,7 @@ export function UrlList({ urls, loading, error, onUrlDeleted, onRefresh }: UrlLi
   };
 
   const getShortUrl = (shortCode: string) => {
-    return `${window.location.origin}/${shortCode}`;
+    return `http://localhost:3001/${shortCode}`;
   };
 
   if (loading) {
@@ -108,9 +109,9 @@ export function UrlList({ urls, loading, error, onUrlDeleted, onRefresh }: UrlLi
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-2">
                       <span className="font-mono text-sm bg-primary/10 text-primary px-2 py-1 rounded">
-                        {url.short_code}
+                        {url.short_code || url.shortCode}
                       </span>
-                      {url.is_custom && (
+                      {(url.is_custom || url.isCustom) && (
                         <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
                           Custom
                         </span>
@@ -118,22 +119,25 @@ export function UrlList({ urls, loading, error, onUrlDeleted, onRefresh }: UrlLi
                     </div>
 
                     <p className="text-sm text-muted-foreground truncate mb-2">
-                      {url.original_url}
+                      {url.original_url || url.originalUrl}
                     </p>
 
                     <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                      <span>Created {formatDate(url.created_at)}</span>
-                      <span>by {url.created_by}</span>
+                      <span>Created {formatDate((url.createdAt || url.created_at) || new Date())}</span>
+                      <span>by {url.created_by || 'admin'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-2 ml-4">
                     <button
-                      onClick={() => handleCopy(getShortUrl(url.short_code), url.short_code)}
+                      onClick={() => {
+                        const shortCode = url.short_code || url.shortCode;
+                        if (shortCode) handleCopy(getShortUrl(shortCode), shortCode);
+                      }}
                       className="p-2 hover:bg-accent rounded-md transition-colors"
                       title="Copy short URL"
                     >
-                      {copied === url.short_code ? (
+                      {copied === (url.short_code || url.shortCode) ? (
                         <Check className="h-4 w-4 text-green-500" />
                       ) : (
                         <Copy className="h-4 w-4" />
@@ -141,7 +145,7 @@ export function UrlList({ urls, loading, error, onUrlDeleted, onRefresh }: UrlLi
                     </button>
 
                     <a
-                      href={getShortUrl(url.short_code)}
+                      href={getShortUrl(url.short_code || url.shortCode || '')}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 hover:bg-accent rounded-md transition-colors"
@@ -151,12 +155,15 @@ export function UrlList({ urls, loading, error, onUrlDeleted, onRefresh }: UrlLi
                     </a>
 
                     <button
-                      onClick={() => handleDelete(url.short_code)}
-                      disabled={deleting === url.short_code}
+                      onClick={() => {
+                        const shortCode = url.short_code || url.shortCode;
+                        if (shortCode) handleDelete(shortCode);
+                      }}
+                      disabled={deleting === (url.short_code || url.shortCode)}
                       className="p-2 hover:bg-destructive/10 text-destructive rounded-md transition-colors"
                       title="Delete URL"
                     >
-                      {deleting === url.short_code ? (
+                      {deleting === (url.short_code || url.shortCode) ? (
                         <RefreshCw className="h-4 w-4 animate-spin" />
                       ) : (
                         <Trash2 className="h-4 w-4" />

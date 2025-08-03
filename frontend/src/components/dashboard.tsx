@@ -27,11 +27,20 @@ export function Dashboard() {
   };
 
   const handleUrlCreated = (newUrl: any) => {
-    setUrls(prev => [newUrl, ...prev]);
+    // Transform the API response to match our URL structure
+    const transformedUrl = {
+      id: Date.now(), // Use timestamp as ID since we don't have one
+      short_code: newUrl.shortCode,
+      original_url: newUrl.originalUrl,
+      created_at: newUrl.createdAt,
+      created_by: 'admin',
+      is_custom: false, // We'll need to track this separately
+    };
+    setUrls(prev => [transformedUrl, ...prev]);
   };
 
   const handleUrlDeleted = (shortCode: string) => {
-    setUrls(prev => prev.filter(url => url.short_code !== shortCode));
+    setUrls(prev => prev.filter(url => (url.short_code || url.shortCode) !== shortCode));
   };
 
   useEffect(() => {

@@ -7,46 +7,37 @@ import { cn } from '@/lib/utils';
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
+  const cycleTheme = () => {
+    const themes: ('light' | 'dark' | 'system')[] = ['light', 'dark', 'system'];
+    const currentIndex = themes.indexOf(theme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    setTheme(themes[nextIndex]);
+  };
+
+  const getIcon = () => {
+    switch (theme) {
+      case 'light':
+        return <Sun className="h-5 w-5" />;
+      case 'dark':
+        return <Moon className="h-5 w-5" />;
+      case 'system':
+        return <Monitor className="h-5 w-5" />;
+      default:
+        return <Sun className="h-5 w-5" />;
+    }
+  };
+
   return (
-    <div className="flex items-center space-x-2 rounded-lg border bg-card p-1">
-      <button
-        onClick={() => setTheme('light')}
-        className={cn(
-          'flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-          theme === 'light'
-            ? 'bg-primary text-primary-foreground'
-            : 'hover:bg-accent hover:text-accent-foreground'
-        )}
-      >
-        <Sun className="h-4 w-4" />
-        <span className="hidden sm:inline">Light</span>
-      </button>
-
-      <button
-        onClick={() => setTheme('dark')}
-        className={cn(
-          'flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-          theme === 'dark'
-            ? 'bg-primary text-primary-foreground'
-            : 'hover:bg-accent hover:text-accent-foreground'
-        )}
-      >
-        <Moon className="h-4 w-4" />
-        <span className="hidden sm:inline">Dark</span>
-      </button>
-
-      <button
-        onClick={() => setTheme('system')}
-        className={cn(
-          'flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-          theme === 'system'
-            ? 'bg-primary text-primary-foreground'
-            : 'hover:bg-accent hover:text-accent-foreground'
-        )}
-      >
-        <Monitor className="h-4 w-4" />
-        <span className="hidden sm:inline">System</span>
-      </button>
-    </div>
+    <button
+      onClick={cycleTheme}
+      className={cn(
+        'flex items-center justify-center rounded-md p-2 text-sm font-medium transition-colors',
+        'hover:bg-accent hover:text-accent-foreground',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+      )}
+      title={`Current theme: ${theme}. Click to cycle themes.`}
+    >
+      {getIcon()}
+    </button>
   );
 }

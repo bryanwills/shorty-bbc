@@ -1,10 +1,14 @@
 export interface Url {
-  id: number;
-  short_code: string;
-  original_url: string;
-  created_at: string;
-  created_by: string;
-  is_custom: boolean;
+  id?: number;
+  short_code?: string;
+  shortCode?: string;
+  original_url?: string;
+  originalUrl?: string;
+  created_at?: string;
+  createdAt?: string;
+  created_by?: string;
+  is_custom?: boolean;
+  isCustom?: boolean;
 }
 
 export interface CreateUrlRequest {
